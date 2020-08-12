@@ -1,0 +1,141 @@
+\NeedsTeXFormat{LaTeX2e}
+\documentclass{lms}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Personal commands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\hd}{\dim_{\textup{H}}}
+\newcommand{\bd}{\dim_{\textup{B}}}
+\newcommand{\ubd}{\overline{\dim}_{\textup{B}}}
+\newcommand{\lbd}{\underline{\dim}_{\textup{B}}}
+\newcommand{\Lip}{\textnormal{Lip}}
+\newcommand{\Int}{\int\limits}
+
+% For statements with proof:
+\newtheorem{theorem}{Theorem}[section] 
+\newtheorem{lemma}[theorem]{Lemma}     
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+% For statements without proof:
+\newnumbered{assertion}{Assertion}    
+\newnumbered{conjecture}{Conjecture} 
+\newnumbered{definition}{Definition}
+\newnumbered{hypothesis}{Hypothesis}
+\newnumbered{remark}{Remark}
+\newnumbered{note}{Note}
+\newnumbered{observation}{Observation}
+\newnumbered{problem}{Problem}
+\newnumbered{question}{Question}
+\newnumbered{algorithm}{Algorithm}
+\newnumbered{example}{Example}
+\newunnumbered{notation}{Notation}
+
+% Title information
+\title[]{Estimated survey area for triangulation surveys}
+\author{Stuart Burrell}
+\dedication{}
+\extraline{}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}\label{Introduction} 
+We consider how the effective sample area (ESA) may be calculated for triangulation surveys. Triangulation neccessitates that signals detected solely by a single detector must be discarded. If it is assumed detections from a single detector are described by a half normal detection function, then the assumption that the retained detections from that detector are also half normal is false. Intuitively, this is clear: detections closer to other detectors are more likely to be retained. In the following section we formulate the correct detection function and the corresponding formula for the ESA.
+
+\section{Detection Function}
+In the following, let $f : [0, \infty) \rightarrow (0, 1]$ be represent the half normal detection function
+\begin{equation}
+f(x) = \exp{\left[-x^2 / (2 \sigma^2)\right]},
+\end{equation}
+where $\sigma$ is a fixed model parameter.\\
+
+We assume that detection probability from any individual detector is described by $f$. The assumption $\sigma$ is constant is easily relaxed in the following, but in practice requires higher-dimensional optimisation in the model fitting stage. Let $A = \{x_i \in \mathbb{R}^2 : i = 1, 2, .. , n\}$ represent an array of $n$ detectors. We derive the detection function for a given detector $x_i \in A$, under the assumption that a detection is recorded if and only if it is detected at $x_i$, $x_j \in A$ for some $j \neq i$.\\
+
+To efficiently describe the detection function we require some notation.
+\begin{definition}
+Let $p = (x, y) \in \mathbb{R}^2$ and $D = \{d_1, d_2, ..., d_n\}$ denote the distances from the point $p$ to each detector in $A$.
+We denote by $A_i^D = \{a_1, a_2, ..., a_{n \choose i}\}$ the set of $n \choose i$ distinct subsets of $D$ of size $i$. For a given $a_i$, let $a_i'$ denote the compliment $D \setminus a_i$. Furthermore, for $a_j \in A_i^D$ let
+\begin{equation}
+F(a_j) = \prod\limits_{d_k \in a_j} f(d_k),
+\end{equation}
+and in particular,
+\begin{equation}
+F(D) = \prod\limits_{d_i \in D} f(d_i).
+\end{equation}
+\end{definition}
+
+Henceforth, the probability that a signal from a point $(x, y)$ is detected on a detector $x_k$ and at least one other is referred to as the multi-detection probability of $(x, y)$ at $x_k$ and denoted $g_k(x, y)$. This function can be written as:
+\begin{equation}
+\begin{split}
+g_k(x, y) & = f(d_k)\sum\limits_{i = 1}^{n - 1} \sum\limits_{a_j \in A_i^{E}} F(a_j)(1 - F(a_j')) \\
+& = f(d_k) \left[(2 - 2^{n-1})F(E) + \sum\limits_{i = 1}^{n - 1} \sum\limits_{a_j \in A_i^{E}}F(a_j)\right],
+\end{split}
+\end{equation}
+where $E = D \setminus \{d_k\}$ and $d_k$ denotes the distance between $(x, y)$ and $x_k$.
+
+\vspace{0.1in}
+For a small number of detectors, the above is well illustrated by an example.
+
+\begin{example}
+Let $A = \{x_1, x_2, x_2\}$ represent an array of three detectors. We consider
+the detection function from detector $x_1$, i.e. $k = 1$ in the above.
+\vspace{0.1in}
+
+For a point $(x, y)$, let $D = \{d_1, d_2, d_3\}$ denote the set of distances from $(x, y)$ to $x_1, x_2$ and $x_3$ respectively. In this case, $E = \{d_2, d_3\}$. From the definition, we have
+\begin{equation}
+\begin{split}
+g_1(x, y) & = f(d_1)\sum\limits_{i = 1}^{2} \sum\limits_{a_j \in A_i^{E}} F(a_j)(1 - F(a_j')) 
+\end{split}
+\end{equation}
+
+By observing $A_1^E = \{\{d_1\}, \{d_2\}\}$ and $A_2^E = \{\{d_2, d_3\}\}$ we can simplify the above to
+\begin{equation}
+\begin{split}
+g_1(x, y)  & = f(d_1)f(d_2)(1 - f(d_3)) + f(d_1)f(d_3)(1 - f(d_2) +  f(d_1)f(d_2)f(d_3) \\
+& = f(d_1)(- f(d_2)f(d_3) + f(d_2) + f(d_3))\\
+& = f(d_1)\left(-2f(d_2)f(d_3)+ f(d_2) + f(d_3) + f(d_2)f(d_3)\right) \\
+& = f(d_1)\left((2 - 2^{2})F(\{d_2, d_3\}) + \sum\limits_{i = 1}^{2}\sum\limits_{a_j \in A_i^{\{d_2, d_3\}}} F(a_j)\right)
+\end{split}
+\end{equation}
+as required.
+\end{example}
+\section{Effective Sample Area}
+The effective sample area (ESA) for point transect surveys is defined as the circular area of radius $\mu$ at which the number of animals detected beyond $\mu$ is equal to the expected number of animals missed before. $\mu$ can be approximately computed by integrating the detection function over the possible distances:
+\begin{equation}
+\Int_{0}^{w} f(x) \, dx,
+\end{equation}
+where $w$ represents a rough estimate of the maximum detection distance.
+
+\vspace{0.1in}
+For triangulation methods, the direction in which this distance is considered impacts the detection probability. This requires us to consider the detection surface above $\mathbb{R}^2$ to compute the ESA. The volume under the detection surface represents the expected number of objects observed, and thus we wish to find the distance $\mu$ from a detector such that the volume under the surface beyond that distance is equal to volume above the surface and below the cylinder of radius $\mu$ and unit height. Specifically, for the ESA around a detector $x_k$, we wish to solve:
+\begin{equation}
+\pi\mu^2 - \Int_{0}^{\mu} \Int_{0}^{2\pi} g_k(rcos(\theta), rsin(\theta)) \,d\theta\,dr = \Int_{\mu}^{\infty} \Int_{0}^{2\pi} g_k(rcos(\theta), rsin(\theta)) \,d\theta\,dr,
+\end{equation}
+and thus
+\begin{equation}
+\mu = \sqrt{\frac{1}{\pi}\Int_{0}^{\infty} \Int_{0}^{2\pi} g_k(rcos(\theta), rsin(\theta)) \,d\theta\,dr}.
+\end{equation}
+This allows for relatively simple computation of $\mu$, providing that the upper infinite limit is truncated to some realistic maximum detection distance. 
+
+\section{Survey Design, Pooling Robustness and Practical Impact}
+The bias caused by traditional methods of computing the ESA for triangulation surveys in comparison to this method has not yet been investigated via simulation. It is thought that in the case that $g_k(0)$ is very close to $1$ for each detector, the property of pooling robustness for distance sampling estimators should largely mitigate the bias caused by inhomogeneity in detection probability with respect to the direction of detection. Since $g_k(0)$ increases as detector separation decreases, the contents of this article should be taken in to account in survey design. We suggest simulations be carried out to determine the severity of neglecting the inhomogenenity for various values of $g_k(0)$ and detector configurations.
+
+\end{document}
+
+\begin{thebibliography}{9}
+% 1. Replace 9 by 99 if 10 or more references
+% 2. Use "\and" between author names below
+
+%\bibitem{key}
+%{\bibname J. Smith, A. Kent \and D. I. Olive}, `Name of Paper', {\em
+%Journal Name } volume:start-end (year).
+
+\end{thebibliography}
+\end{document}
